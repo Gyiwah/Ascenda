@@ -112,7 +112,7 @@ export const offlineService = {
           [
             school.id,
             school.name,
-            school.code,
+            school.code || null,
             school.address || null,
             school.logo_url || null,
             school.created_at,

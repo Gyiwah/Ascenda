@@ -82,7 +82,7 @@ export default function SchoolsScreen() {
   const filteredSchools = schools.filter(
     (s) =>
       s.name.toLowerCase().includes(query.toLowerCase()) ||
-      s.code.toLowerCase().includes(query.toLowerCase()) ||
+      (s.code && s.code.toLowerCase().includes(query.toLowerCase())) ||
       (s.address && s.address.toLowerCase().includes(query.toLowerCase()))
   );
 

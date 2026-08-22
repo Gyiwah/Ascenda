@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Image } from 'react-native';
 import { useAppTheme } from '@/theme/@ThemeProvider';
-import { ReportCardData } from '@/api/headmaster/reportCards';
+import { ReportCardData, GradeBandConfig } from '@/api/headmaster/reportCards';
 
 // A4 dimensions in points (at 72 DPI)
 // A4: 210mm x 297mm = 8.27" x 11.69" = 595.44pt x 842.04pt
@@ -11,6 +11,7 @@ const A4_MARGIN = 20; // Margin for printing
 
 interface TerminalReportCardProps {
   data: ReportCardData;
+  gradeBands?: GradeBandConfig[] | null;
 }
 
 export function TerminalReportCard({ data }: TerminalReportCardProps) {

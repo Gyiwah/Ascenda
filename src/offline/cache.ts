@@ -48,7 +48,7 @@ export async function cacheSchools(schools: School[]) {
 	for (const s of schools) {
 		await runSqlWrite(
 			`INSERT OR REPLACE INTO schools_cache (id, name, code, address, logo_url, created_at) VALUES (?, ?, ?, ?, ?, ?);`,
-			[s.id, s.name, s.code, s.address || null, s.logo_url || null, s.created_at]
+			[s.id, s.name, s.code || null, s.address || null, s.logo_url || null, s.created_at]
 		);
 	}
 }

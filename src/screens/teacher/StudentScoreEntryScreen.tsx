@@ -396,7 +396,7 @@ export default function StudentScoreEntryScreen() {
   const currentStudent = students[currentStudentIndex];
   const currentScore = currentStudent ? scores[currentStudent.id] || { caScore: '', examScore: '', totalScore: 0, grade: '' } : null;
   const totalStudents = students.length;
-  const entriesCount = Object.values(scores).filter(s => s.caScore || s.examScore).length;
+  const entriesCount = Object.values(scores || {}).filter(s => s && (s.caScore || s.examScore)).length;
   const progressPercent = totalStudents ? Math.round((entriesCount / totalStudents) * 100) : 0;
 
   return (

@@ -97,6 +97,7 @@ const lightColors = {
 		primary: '#ebebe9',
 		secondary: '#ffffff',
 		inverse: '#1f1f1f',
+		dark: '#121212',
 	},
 	surface: {
 		// Flat cards
@@ -115,6 +116,7 @@ const lightColors = {
 	accent:  { base: '#3a2853', light: '#513f6f', dark: '#2a1b3f' },
 	warn:    { base: '#f59e0b', light: '#fbbf24', dark: '#b45309' },
 	error:   { base: '#e53935', light: '#ef6c6a', dark: '#c62828' },
+	success: { 500: '#10b981', 600: '#059669', base: '#10b981', light: '#34d399', dark: '#047857' },
 	border:  '#e0dfdc',
 	divider: '#e6e5e3'
 };
@@ -124,7 +126,8 @@ const darkColors = {
 	background: {
 		primary: '#1A122A',
 		secondary: '#33214a',
-		inverse: '#ebebe9'
+		inverse: '#ebebe9',
+		dark: '#121212',
 	},
 	surface: {
 		// Flat cards in same family tone for cohesive look
@@ -143,6 +146,7 @@ const darkColors = {
 	accent:  { base: '#6b403d', light: '#84544f', dark: '#4f2f2c' },
 	warn:    { base: '#f2994a', light: '#fbbf24', dark: '#b45309' },
 	error:   { base: '#eb5757', light: '#ef6c6a', dark: '#c62828' },
+	success: { 500: '#10b981', 600: '#059669', base: '#10b981', light: '#34d399', dark: '#047857' },
 	border:  '#4b3568',
 	divider: '#44305f'
 };
