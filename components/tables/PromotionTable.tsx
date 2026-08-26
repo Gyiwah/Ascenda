@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface Row {
 	student: string;
@@ -15,6 +15,9 @@ interface Props {
 }
 
 export function PromotionTable({ rows }: Props) {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
@@ -37,31 +40,36 @@ export function PromotionTable({ rows }: Props) {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		borderWidth: 1,
-		borderColor: colors.neutral[200],
-		borderRadius: 8,
-		overflow: 'hidden',
-	},
-	header: {
-		flexDirection: 'row',
-		padding: spacing.sm,
-		backgroundColor: colors.neutral[100],
-	},
-	h: {
-		flex: 1,
-		fontWeight: typography.fontWeights.semibold,
-		color: colors.text.primary,
-	},
-	row: {
-		flexDirection: 'row',
-		padding: spacing.sm,
-		borderTopWidth: 1,
-		borderTopColor: colors.neutral[200],
-	},
-	c: {
-		flex: 1,
-		color: colors.text.primary,
-	},
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		container: {
+			borderWidth: 1,
+			borderColor: theme.colors.border,
+			borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+			overflow: 'hidden',
+			backgroundColor: theme.colors.surface.primary,
+		},
+		header: {
+			flexDirection: 'row',
+			padding: theme.spacing.sm,
+			backgroundColor: theme.colors.surface.secondary,
+		},
+		h: {
+			flex: 1,
+			fontWeight: theme.typography.fontWeights.semibold,
+			color: theme.colors.text.primary,
+			fontSize: theme.typography.fontSizes.sm,
+		},
+		row: {
+			flexDirection: 'row',
+			padding: theme.spacing.sm,
+			borderTopWidth: 1,
+			borderTopColor: theme.colors.divider,
+		},
+		c: {
+			flex: 1,
+			color: theme.colors.text.primary,
+			fontSize: theme.typography.fontSizes.sm,
+		},
+	});
+

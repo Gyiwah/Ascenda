@@ -228,8 +228,9 @@ export default function HeadmasterDashboardScreen() {
                 <GraduationCap size={20} color={theme.colors.accent.base} />
               </View>
               <Text style={styles.statValue}>{stats.totalClasses}</Text>
-              <Text style={styles.statLabel}>Classes</Text>
+              <Text style={styles.statLabel}>Classrooms</Text>
             </View>
+
 
             <View style={styles.statItem}>
               <View style={[styles.statIconContainer, { backgroundColor: theme.colors.primary.base + '1A' }]}>

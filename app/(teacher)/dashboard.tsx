@@ -46,7 +46,7 @@ export default function TeacherDashboard() {
         <Card style={styles.statsCard}>
           <BookOpen size={28} color={colors.primary[600]} />
           <Text style={styles.statValue}>{assignments.length}</Text>
-          <Text style={styles.statLabel}>Class Assignments</Text>
+          <Text style={styles.statLabel}>Classroom Assignments</Text>
         </Card>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -57,10 +57,11 @@ export default function TeacherDashboard() {
         >
           <ClipboardList size={24} color={colors.primary[600]} />
           <View style={styles.actionTextContainer}>
-            <Text style={styles.actionTitle}>My Classes</Text>
-            <Text style={styles.actionSubtitle}>View assigned classes</Text>
+            <Text style={styles.actionTitle}>My Classrooms</Text>
+            <Text style={styles.actionSubtitle}>View assigned classrooms</Text>
           </View>
         </TouchableOpacity>
+
 
         <TouchableOpacity
           style={styles.actionCard}

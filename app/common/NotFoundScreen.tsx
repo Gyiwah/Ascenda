@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 export default function NotFoundScreen() {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>404</Text>
@@ -11,22 +14,24 @@ export default function NotFoundScreen() {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: colors.background.light,
-		padding: spacing.xl,
-	},
-	title: {
-		fontSize: typography.fontSizes['3xl'],
-		fontWeight: typography.fontWeights.bold,
-		color: colors.error[500],
-		marginBottom: spacing.xs,
-	},
-	subtitle: {
-		fontSize: typography.fontSizes.base,
-		color: colors.text.secondary,
-	},
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		container: {
+			flex: 1,
+			justifyContent: 'center',
+			alignItems: 'center',
+			backgroundColor: theme.colors.background.primary,
+			padding: theme.spacing.xl,
+		},
+		title: {
+			fontSize: theme.typography.fontSizes['3xl'],
+			fontWeight: theme.typography.fontWeights.bold,
+			color: theme.colors.error.base,
+			marginBottom: theme.spacing.xs,
+		},
+		subtitle: {
+			fontSize: theme.typography.fontSizes.base,
+			color: theme.colors.text.secondary,
+		},
+	});
+

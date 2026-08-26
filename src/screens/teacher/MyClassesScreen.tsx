@@ -65,7 +65,7 @@ export default function MyClassesScreen() {
       }
     } catch (err: any) {
       console.error('[MyClassesScreen] Error loading assignments:', err);
-      showToast(err?.message || 'Failed to load classes', 'error');
+      showToast(err?.message || 'Failed to load classrooms', 'error');
     } finally {
       setLoading(false);
     }
@@ -111,20 +111,21 @@ export default function MyClassesScreen() {
       }
     >
       <View style={styles.header}>
-        <Text style={styles.title}>My Classes</Text>
+        <Text style={styles.title}>My Classrooms</Text>
         <Text style={styles.subtitle}>
-          {assignments.length} {assignments.length === 1 ? 'class' : 'classes'} assigned
+          {assignments.length} {assignments.length === 1 ? 'classroom' : 'classrooms'} assigned
         </Text>
       </View>
 
       {assignments.length === 0 ? (
         <Card style={styles.emptyCard}>
           <BookOpen size={48} color={theme.colors.text.secondary} />
-          <Text style={styles.emptyText}>No classes assigned yet</Text>
+          <Text style={styles.emptyText}>No classrooms assigned yet</Text>
           <Text style={styles.emptySubtext}>
-            Contact your administrator to get assigned to classes and subjects.
+            Contact your administrator to get assigned to classrooms and subjects.
           </Text>
         </Card>
+
       ) : (
         assignments.map((group) => (
           <View key={group.class.id} style={styles.classGroup}>

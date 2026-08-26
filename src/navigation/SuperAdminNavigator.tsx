@@ -68,8 +68,16 @@ function SuperAdminTabs() {
 }
 
 export default function SuperAdminNavigator() {
+  const theme = useAppTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.colors.surface.primary },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: { color: theme.colors.text.primary },
+      }}
+    >
       <Stack.Screen name="SuperAdminTabs" component={SuperAdminTabs} options={{ headerShown: false }} />
       <Stack.Screen
         name="AddSchool"
@@ -99,4 +107,5 @@ export default function SuperAdminNavigator() {
     </Stack.Navigator>
   );
 }
+
 

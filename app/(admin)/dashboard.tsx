@@ -78,10 +78,11 @@ export default function AdminDashboard() {
         >
           <BookOpen size={24} color={colors.primary[600]} />
           <View style={styles.actionTextContainer}>
-            <Text style={styles.actionTitle}>Manage Classes</Text>
-            <Text style={styles.actionSubtitle}>Configure classes and subjects</Text>
+            <Text style={styles.actionTitle}>Manage Classrooms</Text>
+            <Text style={styles.actionSubtitle}>Configure classrooms and subjects</Text>
           </View>
         </TouchableOpacity>
+
 
         <TouchableOpacity
           style={styles.actionCard}

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface InputProps {
   label?: string;
@@ -33,6 +33,9 @@ export function Input({
   numberOfLines = 1,
   editable = true,
 }: InputProps) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -41,7 +44,7 @@ export function Input({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.text.secondary}
+        placeholderTextColor={theme.colors.text.muted}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
@@ -55,25 +58,27 @@ export function Input({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: typography.fontSizes.sm,
-    fontWeight: typography.fontWeights.medium,
-    color:colors.text.label,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.text.secondary,
-    borderRadius: 8,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    fontSize: typography.fontSizes.base,
-    color: colors.text.primary,
-    backgroundColor: colors.background.light,
-  },
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.spacing.md,
+    },
+    label: {
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.medium,
+      color: theme.colors.text.label,
+      marginBottom: theme.spacing.xs,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.md,
+      fontSize: theme.typography.fontSizes.base,
+      color: theme.colors.text.primary,
+      backgroundColor: theme.colors.surface.primary,
+    },
+  });
+
 

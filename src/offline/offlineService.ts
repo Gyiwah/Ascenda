@@ -232,6 +232,75 @@ export const offlineService = {
   },
 
   /**
+   * Cache classrooms to SQLite
+   */
+  async cacheClasses(classes: any[]) {
+    try {
+      await runSqlWrite('DELETE FROM classes_cache;');
+      for (const c of classes) {
+        await runSqlWrite(
+          `INSERT OR REPLACE INTO classes_cache 
+           (id, name, level, academic_year, school_id, created_at) 
+           VALUES (?, ?, ?, ?, ?, ?);`,
+          [c.id, c.name, c.level, c.academic_year, c.school_id, c.created_at || new Date().toISOString()]
+        );
+      }
+    } catch (error) {
+      console.error('[offlineService] Error caching classes:', error);
+    }
+  },
+
+  /**
+   * Get cached classrooms for school
+   */
+  async getOfflineClasses(schoolId: string): Promise<any[]> {
+    try {
+      return await runSql<any>(
+        `SELECT * FROM classes_cache WHERE school_id = ? ORDER BY level ASC, name ASC;`,
+        [schoolId]
+      );
+    } catch (error) {
+      console.error('[offlineService] Error reading offline classes:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Save draft scores offline
+   */
+  async saveOfflineScoreDraft(draft: {
+    student_id: string;
+    subject_id: string;
+    class_id: string;
+    class_score: number;
+    exam_score: number;
+  }) {
+    try {
+      const id = `${draft.student_id}_${draft.subject_id}`;
+      await runSqlWrite(
+        `INSERT OR REPLACE INTO offline_score_drafts 
+         (id, student_id, subject_id, class_id, class_score, exam_score, synced, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, 0, ?);`,
+        [id, draft.student_id, draft.subject_id, draft.class_id, draft.class_score, draft.exam_score, new Date().toISOString()]
+      );
+    } catch (error) {
+      console.error('[offlineService] Error saving offline score draft:', error);
+    }
+  },
+
+  /**
+   * Get unsynced offline score drafts
+   */
+  async getUnsyncedScoreDrafts(): Promise<any[]> {
+    try {
+      return await runSql<any>(`SELECT * FROM offline_score_drafts WHERE synced = 0;`);
+    } catch (error) {
+      console.error('[offlineService] Error fetching unsynced score drafts:', error);
+      return [];
+    }
+  },
+
+  /**
    * Clear all offline cache
    */
   async clearCache() {
@@ -239,6 +308,10 @@ export const offlineService = {
       console.log('[offlineService] Clearing all offline cache...');
       await runSqlWrite('DELETE FROM users_cache;');
       await runSqlWrite('DELETE FROM schools_cache;');
+      await runSqlWrite('DELETE FROM classes_cache;');
+      await runSqlWrite('DELETE FROM subjects_cache;');
+      await runSqlWrite('DELETE FROM students_cache;');
+      await runSqlWrite('DELETE FROM offline_score_drafts;');
       console.log('[offlineService] Offline cache cleared');
     } catch (error) {
       console.error('[offlineService] Error clearing cache:', error);
@@ -246,3 +319,4 @@ export const offlineService = {
     }
   },
 };
+

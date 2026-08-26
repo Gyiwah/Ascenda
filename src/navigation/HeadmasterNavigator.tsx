@@ -77,8 +77,16 @@ function HeadmasterTabs() {
 }
 
 export default function HeadmasterNavigator() {
+  const theme = useAppTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.colors.surface.primary },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: { color: theme.colors.text.primary },
+      }}
+    >
       <Stack.Screen name="HeadmasterTabs" component={HeadmasterTabs} options={{ headerShown: false }} />
       <Stack.Screen
         name="ReviewAssessment"
@@ -113,4 +121,5 @@ export default function HeadmasterNavigator() {
     </Stack.Navigator>
   );
 }
+
 

@@ -1,17 +1,19 @@
 import { Tabs } from 'expo-router';
-import { colors } from '@/theme';
+import { useAppTheme } from '@/theme';
 import { Home, Users, BookOpen, GraduationCap, Book, User } from 'lucide-react-native';
 
 export default function AdminLayout() {
+  const theme = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary[600],
-        tabBarInactiveTintColor: colors.text.secondary,
+        tabBarActiveTintColor: theme.colors.primary.base,
+        tabBarInactiveTintColor: theme.colors.text.secondary,
         tabBarStyle: {
-          backgroundColor: colors.background.light,
-          borderTopColor: colors.neutral[200],
+          backgroundColor: theme.colors.surface.primary,
+          borderTopColor: theme.colors.border,
         },
       }}
     >
@@ -32,10 +34,11 @@ export default function AdminLayout() {
       <Tabs.Screen
         name="classes"
         options={{
-          title: 'Classes',
+          title: 'Classrooms',
           tabBarIcon: ({ color, size }) => <BookOpen size={size} color={color} />,
         }}
       />
+
       <Tabs.Screen
         name="students"
         options={{
@@ -60,3 +63,4 @@ export default function AdminLayout() {
     </Tabs>
   );
 }
+

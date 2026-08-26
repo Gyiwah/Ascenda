@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 import { useAuthStore } from './useAuthStore';
 import { useToast } from '@/components/ToastContext';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 
 export default function ResetPasswordScreen() {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
 	const [email, setEmail] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
@@ -40,19 +42,45 @@ export default function ResetPasswordScreen() {
 				<Text style={styles.subtitle}>Enter your email to receive a reset link.</Text>
 				<Input label="Email" value={email} onChangeText={(t) => { setEmail(t); setError(''); }} keyboardType="email-address" autoCapitalize="none" />
 				{error ? <Text style={styles.error}>{error}</Text> : null}
-				<Button title="Send Reset Email" onPress={handleSubmit} loading={loading} disabled={loading || !email} style={{ marginTop: spacing.md }} />
+				<Button title="Send Reset Email" onPress={handleSubmit} loading={loading} disabled={loading || !email} style={{ marginTop: theme.spacing.md }} />
 			</View>
 			</SafeAreaView>
 		</KeyboardAvoidingView>
 	);
 }
 
-const styles = StyleSheet.create({
-	container: { flex: 1, backgroundColor: colors.background.light, justifyContent: 'center', padding: spacing.lg },
-	card: { backgroundColor: colors.background.light, borderRadius: 12, padding: spacing.xl, elevation: 4 },
-	title: { fontSize: typography.fontSizes['2xl'], fontWeight: typography.fontWeights.bold, color: colors.text.primary, marginBottom: spacing.xs },
-	subtitle: { fontSize: typography.fontSizes.base, color: colors.text.secondary, marginBottom: spacing.lg },
-	error: { marginTop: spacing.sm, color: colors.error[600] },
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		container: {
+			flex: 1,
+			backgroundColor: theme.colors.background.primary,
+			justifyContent: 'center',
+			padding: theme.spacing.lg,
+		},
+		card: {
+			backgroundColor: theme.colors.surface.primary,
+			borderRadius: 12,
+			padding: theme.spacing.xl,
+			borderWidth: 1,
+			borderColor: theme.colors.border,
+			elevation: 4,
+		},
+		title: {
+			fontSize: theme.typography.fontSizes['2xl'],
+			fontWeight: theme.typography.fontWeights.bold,
+			color: theme.colors.text.primary,
+			marginBottom: theme.spacing.xs,
+		},
+		subtitle: {
+			fontSize: theme.typography.fontSizes.base,
+			color: theme.colors.text.secondary,
+			marginBottom: theme.spacing.lg,
+		},
+		error: {
+			marginTop: theme.spacing.sm,
+			color: theme.colors.error.base,
+		},
+	});
+
 
 

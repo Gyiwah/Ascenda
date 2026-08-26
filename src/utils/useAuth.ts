@@ -1,108 +1,119 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { authService } from '../api/auth';
 import { userService } from '../api/users';
 import { User, StudentUser } from '@/types/database';
 import { clearSession, loadSession, saveSession } from '@/offline/cache';
 
-export function useAuth() {
-  const [user, setUser] = useState<User | StudentUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef(false);
-  const [isStudent, setIsStudent] = useState(false);
+interface GlobalAuthState {
+  user: User | StudentUser | null;
+  loading: boolean;
+  error: string | null;
+  isStudent: boolean;
+}
 
-  const fetchUserProfile = async () => {
-    try {
-      const { data, error } = await userService.getCurrentUser();
-      // Log returned user row for debugging (contains role if present)
-      if (__DEV__) {
-        console.debug('[useAuth] fetchUserProfile - user row:', data, 'error:', error);
-      }
-      if (error) throw error;
-      
-      // Check if user is active
-      if (data && !data.is_active) {
-        console.warn('[useAuth] User is inactive, signing out...');
-        await authService.signOut();
-        setUser(null);
-        setError('ACCOUNT_DEACTIVATED');
-        return null;
-      }
-      
-      setUser(data);
-      return data;
-    } catch (err: any) {
-      setError(err.message);
-      setUser(null);
+let globalAuthState: GlobalAuthState = {
+  user: null,
+  loading: true,
+  error: null,
+  isStudent: false,
+};
+
+const authListeners = new Set<(state: GlobalAuthState) => void>();
+
+function updateGlobalAuth(updates: Partial<GlobalAuthState>) {
+  globalAuthState = { ...globalAuthState, ...updates };
+  authListeners.forEach((listener) => listener(globalAuthState));
+}
+
+let isSessionInitialized = false;
+
+async function fetchUserProfile(): Promise<User | null> {
+  try {
+    const { data, error } = await userService.getCurrentUser();
+    if (__DEV__) {
+      console.debug('[useAuth] fetchUserProfile - user row:', data, 'error:', error);
+    }
+    if (error) throw error;
+    
+    if (data && !data.is_active) {
+      console.warn('[useAuth] User is inactive, signing out...');
+      await authService.signOut();
+      updateGlobalAuth({ user: null, error: 'ACCOUNT_DEACTIVATED', isStudent: false });
       return null;
     }
-  };
+    
+    updateGlobalAuth({ user: data, isStudent: false, error: null });
+    return data;
+  } catch (err: any) {
+    updateGlobalAuth({ error: err.message, user: null });
+    return null;
+  }
+}
+
+async function initAuthSession() {
+  if (isSessionInitialized) return;
+  isSessionInitialized = true;
+
+  try {
+    const { data: session } = await authService.getSession();
+    if (session?.session) {
+      await fetchUserProfile();
+    } else {
+      // Offline: load cached session (could be staff or student)
+      const cached = await loadSession();
+      if (cached?.payload) {
+        if (cached.payload.student) {
+          updateGlobalAuth({
+            user: cached.payload.student as StudentUser,
+            isStudent: true,
+            error: null,
+          });
+        } else if (cached.payload.user) {
+          updateGlobalAuth({
+            user: cached.payload.user as User,
+            isStudent: false,
+            error: null,
+          });
+        }
+      }
+    }
+  } catch (err: any) {
+    updateGlobalAuth({ error: err.message });
+  } finally {
+    updateGlobalAuth({ loading: false });
+  }
+
+  // Listen for Supabase auth state changes
+  authService.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      await fetchUserProfile();
+      try {
+        await saveSession({
+          user_id: session.user?.id ?? null,
+          access_token: session.session?.access_token ?? null,
+          refresh_token: session.session?.refresh_token ?? null,
+          expires_at: session.session?.expires_at ?? null,
+          payload: session,
+        });
+      } catch {}
+    } else if (event === 'SIGNED_OUT') {
+      updateGlobalAuth({ user: null, isStudent: false });
+      try {
+        await clearSession();
+      } catch {}
+    }
+  });
+}
+
+export function useAuth() {
+  const [state, setState] = useState<GlobalAuthState>(globalAuthState);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const checkSession = async () => {
-      try {
-        const { data: session } = await authService.getSession();
-        if (!isMounted) return;
-        if (session?.session) {
-          await fetchUserProfile();
-        } else {
-          // Offline: load cached session (could be staff or student)
-          const cached = await loadSession();
-          if (isMounted && cached?.payload) {
-            if (cached.payload.student) {
-              // Student session
-              setUser(cached.payload.student as StudentUser);
-              setIsStudent(true);
-            } else if (cached.payload.user) {
-              // Staff session
-              setUser(cached.payload.user as User);
-              setIsStudent(false);
-            }
-          }
-        }
-      } catch (err: any) {
-        if (isMounted) setError(err.message);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    // Only run initial check once
-    if (!fetchedRef.current) {
-      checkSession();
-      fetchedRef.current = true;
-    }
-
-    // Listen for auth state changes
-    const { subscription } = authService.onAuthStateChange(
-      async (event, session) => {
-        if (!isMounted) return;
-        if (event === 'SIGNED_IN' && session) {
-          await fetchUserProfile();
-          // cache session
-          try {
-            await saveSession({
-              user_id: session.user?.id ?? null,
-              access_token: session.session?.access_token ?? null,
-              refresh_token: session.session?.refresh_token ?? null,
-              expires_at: session.session?.expires_at ?? null,
-              payload: session,
-            });
-          } catch {}
-        } else if (event === 'SIGNED_OUT') {
-          if (isMounted) setUser(null);
-          try {
-            await clearSession();
-          } catch {}
-        }
-      }
-    );
+    authListeners.add(setState);
+    initAuthSession();
 
     return () => {
-      isMounted = false;
-      subscription?.unsubscribe();
+      authListeners.delete(setState);
     };
   }, []);
 
@@ -111,13 +122,10 @@ export function useAuth() {
    */
   const signIn = async (email: string, password: string) => {
     try {
-      setError(null);
-      setLoading(true);
-      setIsStudent(false);
+      updateGlobalAuth({ error: null, loading: true, isStudent: false });
       const signInResponse = await authService.signIn(email, password);
-      // Log the raw auth sign-in response to see session/user/metadata
       if (__DEV__) {
-        console.debug('[useAuth] signIn - authService.signIn response:', signInResponse);
+        console.debug('[useAuth] signIn response:', signInResponse);
       }
 
       const { error } = signInResponse;
@@ -135,24 +143,20 @@ export function useAuth() {
           });
         }
       } catch {}
-      setLoading(false);
+      updateGlobalAuth({ loading: false });
       return { success: true, user: userData };
     } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
+      updateGlobalAuth({ error: err.message, loading: false });
       return { success: false, error: err.message };
     }
   };
 
   /**
    * Sign in students using admission number and date of birth
-   * Students don't use Supabase Auth, so this is handled differently
    */
   const signInStudent = async (admissionNumber: string, dateOfBirth: string) => {
     try {
-      setError(null);
-      setLoading(true);
-      setIsStudent(true);
+      updateGlobalAuth({ error: null, loading: true, isStudent: true });
       
       const { data, error } = await authService.signInStudent(admissionNumber, dateOfBirth);
       
@@ -161,67 +165,70 @@ export function useAuth() {
         throw new Error('Invalid student credentials');
       }
 
-      // Set student user (no auth session for students)
       const studentUser: StudentUser = data.student;
-      setUser(studentUser);
       
-      // Save student session info to cache (different format than staff)
+      // Update global user immediately
+      updateGlobalAuth({
+        user: studentUser,
+        isStudent: true,
+        loading: false,
+        error: null,
+      });
+      
+      // Save student session info to persistent SQLite cache
       try {
         await saveSession({
           user_id: studentUser.id,
-          access_token: null, // Students don't have auth tokens
+          access_token: null,
           refresh_token: null,
           expires_at: null,
           payload: { student: studentUser },
         });
-      } catch {}
+      } catch (cacheErr) {
+        console.warn('[useAuth] Could not cache student session:', cacheErr);
+      }
 
-      setLoading(false);
       return { success: true, user: studentUser };
     } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
-      setIsStudent(false);
+      updateGlobalAuth({ error: err.message, loading: false, isStudent: false });
       return { success: false, error: err.message };
     }
   };
 
   const signOut = async () => {
     try {
-      setError(null);
-      // Only call Supabase signOut if not a student (students don't have auth sessions)
-      if (!isStudent) {
+      updateGlobalAuth({ error: null });
+      if (!state.isStudent) {
         await authService.signOut();
       }
-      setUser(null);
-      setIsStudent(false);
+      updateGlobalAuth({ user: null, isStudent: false });
       try {
         await clearSession();
       } catch {}
       return { success: true };
     } catch (err: any) {
-      setError(err.message);
+      updateGlobalAuth({ error: err.message });
       return { success: false, error: err.message };
     }
   };
 
   const resetPassword = async (email: string) => {
     try {
-      setError(null);
+      updateGlobalAuth({ error: null });
       const { error } = await authService.resetPassword(email);
       if (error) throw error;
       return { success: true };
     } catch (err: any) {
-      setError(err.message);
+      updateGlobalAuth({ error: err.message });
       return { success: false, error: err.message };
     }
   };
 
   return {
-    user,
-    loading,
-    error,
-    isStudent,
+    user: state.user,
+    loading: state.loading,
+    error: state.error,
+    isStudent: state.isStudent,
     signIn,
     signInStudent,
     signOut,
@@ -229,4 +236,5 @@ export function useAuth() {
     refreshUser: fetchUserProfile,
   };
 }
+
 

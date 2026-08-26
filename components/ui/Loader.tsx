@@ -1,16 +1,18 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface LoaderProps {
   size?: 'small' | 'large';
   color?: string;
+  fullscreen?: boolean;
 }
 
-export function Loader({ size = 'large', color = colors.primary[600] }: LoaderProps) {
+export function Loader({ size = 'large', color, fullscreen = false }: LoaderProps) {
+  const theme = useAppTheme();
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size={size} color={color} />
+    <View style={[styles.container, fullscreen && { backgroundColor: theme?.colors?.background?.primary ?? '#ffffff' }]}>
+      <ActivityIndicator size={size} color={color || (theme?.colors?.primary?.base ?? '#e16510')} />
     </View>
   );
 }
@@ -22,3 +24,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

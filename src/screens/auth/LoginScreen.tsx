@@ -14,7 +14,9 @@ import {
 } from 'react-native';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { DatePicker } from '@/components/ui/DatePicker';
 import { useAuth } from '@/utils/useAuth';
+
 import { useToast } from '@/components/ToastContext';
 import { resetToRoute } from '@/navigation/navigationService';
 import { useNavigation } from '@react-navigation/native';
@@ -51,21 +53,22 @@ export default function LoginScreen() {
     setError('');
 
     if (loginType === 'student') {
-      // Student login: admission number + date of birth
-      if (!admissionNumber.trim() || !dateOfBirth.trim()) {
+      const cleanAdm = admissionNumber.trim();
+      let cleanDob = dateOfBirth.trim().replace(/\//g, '-');
+
+      if (!cleanAdm || !cleanDob) {
         setError('Please enter admission number and date of birth');
         return;
       }
 
-      // Validate date format (YYYY-MM-DD)
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      if (!dateRegex.test(dateOfBirth.trim())) {
-        setError('Please enter date of birth in format YYYY-MM-DD');
-        return;
+      // Convert DD-MM-YYYY to YYYY-MM-DD
+      const ddmmyyyy = cleanDob.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if (ddmmyyyy) {
+        cleanDob = `${ddmmyyyy[3]}-${ddmmyyyy[2].padStart(2, '0')}-${ddmmyyyy[1].padStart(2, '0')}`;
       }
 
       setLoading(true);
-      const result = await signInStudent(admissionNumber.trim(), dateOfBirth.trim());
+      const result = await signInStudent(cleanAdm, cleanDob);
       setLoading(false);
 
       if (!result.success) {
@@ -73,12 +76,11 @@ export default function LoginScreen() {
         return;
       }
 
-      // Navigate to student dashboard
-      if (result.user) {
-        resetToRoute('Student');
-        return;
-      }
+      showToast('Signed in successfully', 'success');
+      resetToRoute('Student');
+      return;
     } else {
+
       // Staff login: email + password
       if (!email.trim() || !password.trim()) {
         setError('Please enter email and password');
@@ -282,22 +284,22 @@ export default function LoginScreen() {
                         <Calendar size={20} color={theme.colors.text.secondary} />
                       </View>
                       <View style={styles.inputWrapper}>
-                        <Input
+                        <DatePicker
                           label="Date of Birth"
                           value={dateOfBirth}
-                          onChangeText={(text) => {
-                            setDateOfBirth(text);
+                          onValueChange={(date) => {
+                            setDateOfBirth(date);
                             setError('');
                           }}
-                          placeholder="YYYY-MM-DD"
-                          keyboardType="numeric"
-                          autoCorrect={false}
-                          style={styles.inputNoMargin}
+                          placeholder="Select Date of Birth"
+                          minYear={1995}
+                          maxYear={new Date().getFullYear()}
                         />
                       </View>
                     </View>
                   </>
                 )}
+
 
                 <Button
                   title="Sign In"

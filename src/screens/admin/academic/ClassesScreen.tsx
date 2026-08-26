@@ -118,13 +118,13 @@ export default function ClassesScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Input
-          placeholder="Search classes..."
+          placeholder="Search classrooms..."
           value={searchTerm}
           onChangeText={setSearchTerm}
           style={styles.searchInput}
         />
         <Button
-          title="Add Class"
+          title="Add Classroom"
           onPress={openCreate}
           icon={<Plus size={18} color={theme.colors.text.inverse} />}
         />
@@ -141,13 +141,14 @@ export default function ClassesScreen() {
           <Card style={styles.emptyCard}>
             <GraduationCap size={48} color={theme.colors.text.muted} />
             <Text style={styles.emptyText}>
-              {searchTerm ? 'No classes found' : 'No classes yet'}
+              {searchTerm ? 'No classrooms found' : 'No classrooms yet'}
             </Text>
             {!searchTerm && (
-              <Button title="Add First Class" onPress={openCreate} style={styles.emptyButton} />
+              <Button title="Add First Classroom" onPress={openCreate} style={styles.emptyButton} />
             )}
           </Card>
         ) : (
+
           visibleClasses.map((cls) => (
             <Pressable key={cls.id} onPress={() => {}}>
               <Card style={styles.classCard}>

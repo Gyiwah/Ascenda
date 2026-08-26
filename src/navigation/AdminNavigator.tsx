@@ -78,14 +78,23 @@ function AdminTabs() {
 }
 
 export default function AdminNavigator() {
+  const theme = useAppTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.colors.surface.primary },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: { color: theme.colors.text.primary },
+      }}
+    >
       <Stack.Screen name="AdminTabs" component={AdminTabs} options={{ headerShown: false }} />
       <Stack.Screen
         name="AddClass"
         component={AddClassScreen}
-        options={{ title: 'Add Class', headerBackTitle: 'Back' }}
+        options={{ title: 'Add Classroom', headerBackTitle: 'Back' }}
       />
+
       <Stack.Screen
         name="AddSubject"
         component={AddSubjectScreen}
@@ -119,4 +128,5 @@ export default function AdminNavigator() {
     </Stack.Navigator>
   );
 }
+
 

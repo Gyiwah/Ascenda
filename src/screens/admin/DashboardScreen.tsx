@@ -143,7 +143,7 @@ export default function AdminDashboardScreen() {
             <Card style={styles.statCard}>
               <BookOpen size={28} color={safeTheme.colors.warn.base} />
               <Text style={styles.statValue}>{stats.classes}</Text>
-              <Text style={styles.statLabel}>Classes</Text>
+              <Text style={styles.statLabel}>Classrooms</Text>
             </Card>
           </Pressable>
 

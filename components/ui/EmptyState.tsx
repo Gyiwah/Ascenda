@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface EmptyStateProps {
   title: string;
@@ -9,6 +9,9 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ title, message, icon }: EmptyStateProps) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   return (
     <View style={styles.container}>
       {icon && <View style={styles.iconContainer}>{icon}</View>}
@@ -18,26 +21,28 @@ export function EmptyState({ title, message, icon }: EmptyStateProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
-  },
-  iconContainer: {
-    marginBottom: spacing.md,
-  },
-  title: {
-    fontSize: typography.fontSizes.lg,
-    fontWeight: typography.fontWeights.semibold,
-    color: colors.text.primary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  message: {
-    fontSize: typography.fontSizes.base,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: theme.spacing.xl,
+    },
+    iconContainer: {
+      marginBottom: theme.spacing.md,
+    },
+    title: {
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text.primary,
+      textAlign: 'center',
+      marginBottom: theme.spacing.xs,
+    },
+    message: {
+      fontSize: theme.typography.fontSizes.base,
+      color: theme.colors.text.secondary,
+      textAlign: 'center',
+    },
+  });
+

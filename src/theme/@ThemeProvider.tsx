@@ -142,7 +142,9 @@ export function useThemeMode() {
 	return useContext(ThemeContext);
 }
 
-export function useAppTheme(): any {
-	return useContext(ThemeContext).theme;
+export function useAppTheme(): ThemeType {
+	const ctx = useContext(ThemeContext);
+	return ctx?.theme || lightTheme;
 }
+
 

@@ -2,9 +2,11 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import StudentDashboardScreen from '../screens/student/DashboardScreen';
+import StudentSubjectsScreen from '../screens/student/StudentSubjectsScreen';
+import StudentReportCardsScreen from '../screens/student/StudentReportCardsScreen';
 import SettingsScreen from '../screens/common/SettingsScreen';
 import { useAppTheme } from '@/theme/@ThemeProvider';
-import { Home, UserCircle } from 'lucide-react-native';
+import { Home, BookOpen, FileText, UserCircle } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -36,10 +38,14 @@ function StudentTabs() {
           switch (route.name) {
             case 'Dashboard':
               return <Home color={color} size={size} />;
+            case 'StudentSubjects':
+              return <BookOpen color={color} size={size} />;
+            case 'StudentReportCards':
+              return <FileText color={color} size={size} />;
             default:
               return null;
           }
-        }
+        },
       })}
     >
       <Tab.Screen 
@@ -47,14 +53,42 @@ function StudentTabs() {
         component={StudentDashboardScreen}
         options={{ title: 'Dashboard' }}
       />
+      <Tab.Screen 
+        name="StudentSubjects" 
+        component={StudentSubjectsScreen}
+        options={{ title: 'Subjects & Scores' }}
+      />
+      <Tab.Screen 
+        name="StudentReportCards" 
+        component={StudentReportCardsScreen}
+        options={{ title: 'Report Cards' }}
+      />
     </Tab.Navigator>
   );
 }
 
 export default function StudentNavigator() {
+  const theme = useAppTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.colors.surface.primary },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: { color: theme.colors.text.primary },
+      }}
+    >
       <Stack.Screen name="StudentTabs" component={StudentTabs} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="StudentSubjects"
+        component={StudentSubjectsScreen}
+        options={{ title: 'Subjects & Continuous Assessment', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="StudentReportCards"
+        component={StudentReportCardsScreen}
+        options={{ title: 'Terminal Report Cards', headerBackTitle: 'Back' }}
+      />
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
@@ -63,4 +97,6 @@ export default function StudentNavigator() {
     </Stack.Navigator>
   );
 }
+
+
 

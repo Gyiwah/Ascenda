@@ -5,11 +5,12 @@ import { colors, spacing, typography } from '@/theme';
 export default function TeacherClassesScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My Classes</Text>
-      <Text style={styles.subtitle}>View your class assignments</Text>
+      <Text style={styles.title}>My Classrooms</Text>
+      <Text style={styles.subtitle}>View your classroom assignments</Text>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

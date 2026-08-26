@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface ButtonProps {
   title: string;
@@ -18,9 +18,12 @@ export function Button({
   variant = 'primary', 
   loading = false, 
   disabled = false,
-  style 
-  , icon
+  style,
+  icon,
 }: ButtonProps) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   const buttonStyle = [
     styles.button,
     variant === 'primary' && styles.primary,
@@ -45,7 +48,7 @@ export function Button({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.text.inverse : colors.primary[600]} />
+        <ActivityIndicator color={variant === 'primary' ? theme.colors.text.inverse : theme.colors.primary.base} />
       ) : (
         <>
           {icon ? <>{icon}</> : null}
@@ -56,41 +59,43 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-  },
-  primary: {
-    backgroundColor: colors.primary[600],
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.primary[600],
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  text: {
-    fontSize: typography.fontSizes.base,
-    fontWeight: typography.fontWeights.semibold,
-  },
-  primaryText: {
-    color: colors.text.inverse,
-  },
-  outlineText: {
-    color: colors.primary[600],
-  },
-  ghostText: {
-    color: colors.primary[600],
-  },
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    button: {
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 48,
+    },
+    primary: {
+      backgroundColor: theme.colors.primary.base,
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: theme.colors.primary.base,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    text: {
+      fontSize: theme.typography.fontSizes.base,
+      fontWeight: theme.typography.fontWeights.semibold,
+    },
+    primaryText: {
+      color: theme.colors.text.inverse,
+    },
+    outlineText: {
+      color: theme.colors.primary.base,
+    },
+    ghostText: {
+      color: theme.colors.primary.base,
+    },
+  });
+
 

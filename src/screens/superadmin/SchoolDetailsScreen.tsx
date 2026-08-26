@@ -256,9 +256,10 @@ export default function SchoolDetailsScreen() {
         <Card style={styles.statCard}>
           <BookOpen size={24} color={theme.colors.warn.base} />
           <Text style={styles.statValue}>{safeStats.classes ?? 0}</Text>
-          <Text style={styles.statLabel}>Classes</Text>
+          <Text style={styles.statLabel}>Classrooms</Text>
         </Card>
       </View>
+
 
       {/* ================= ADMIN ================= */}
       {admin && typeof admin === 'object' && (

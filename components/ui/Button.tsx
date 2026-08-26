@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface ButtonProps {
   title: string;
@@ -18,6 +18,7 @@ interface ButtonProps {
   disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  icon?: React.ReactNode;
 }
 
 export function Button({
@@ -29,19 +30,49 @@ export function Button({
   disabled = false,
   style,
   textStyle,
+  icon,
 }: ButtonProps) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
+  const buttonVariantStyle: Record<string, ViewStyle> = {
+    primary: styles.primaryButton,
+    secondary: styles.secondaryButton,
+    outline: styles.outlineButton,
+    danger: styles.dangerButton,
+  };
+
+  const buttonSizeStyle: Record<string, ViewStyle> = {
+    small: styles.smallButton,
+    medium: styles.mediumButton,
+    large: styles.largeButton,
+  };
+
+  const textVariantStyle: Record<string, TextStyle> = {
+    primary: styles.primaryText,
+    secondary: styles.secondaryText,
+    outline: styles.outlineText,
+    danger: styles.dangerText,
+  };
+
+  const textSizeStyle: Record<string, TextStyle> = {
+    small: styles.smallText,
+    medium: styles.mediumText,
+    large: styles.largeText,
+  };
+
   const buttonStyles = [
     styles.button,
-    styles[`${variant}Button`],
-    styles[`${size}Button`],
+    buttonVariantStyle[variant],
+    buttonSizeStyle[size],
     disabled && styles.disabledButton,
     style,
   ];
 
   const textStyles = [
     styles.text,
-    styles[`${variant}Text`],
-    styles[`${size}Text`],
+    textVariantStyle[variant],
+    textSizeStyle[size],
     disabled && styles.disabledText,
     textStyle,
   ];
@@ -55,80 +86,88 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? colors.primary[600] : colors.text.inverse}
+          color={variant === 'outline' ? theme.colors.primary.base : theme.colors.text.inverse}
         />
       ) : (
-        <Text style={textStyles}>{title}</Text>
+        <>
+          {icon ? <>{icon}</> : null}
+          <Text style={textStyles}>{title}</Text>
+        </>
       )}
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  primaryButton: {
-    backgroundColor: colors.primary[600],
-  },
-  secondaryButton: {
-    backgroundColor: colors.neutral[600],
-  },
-  outlineButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.primary[600],
-  },
-  dangerButton: {
-    backgroundColor: colors.error[500],
-  },
-  disabledButton: {
-    backgroundColor: colors.neutral[300],
-    borderColor: colors.neutral[300],
-  },
-  smallButton: {
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
-    minHeight: 32,
-  },
-  mediumButton: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    minHeight: 44,
-  },
-  largeButton: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    minHeight: 52,
-  },
-  text: {
-    fontWeight: typography.fontWeights.semibold,
-  },
-  primaryText: {
-    color: colors.text.inverse,
-  },
-  secondaryText: {
-    color: colors.text.inverse,
-  },
-  outlineText: {
-    color: colors.primary[600],
-  },
-  dangerText: {
-    color: colors.text.inverse,
-  },
-  disabledText: {
-    color: colors.text.secondary,
-  },
-  smallText: {
-    fontSize: typography.fontSizes.sm,
-  },
-  mediumText: {
-    fontSize: typography.fontSizes.base,
-  },
-  largeText: {
-    fontSize: typography.fontSizes.lg,
-  },
-});
+
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    button: {
+      borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      gap: theme.spacing.xs,
+    },
+    primaryButton: {
+      backgroundColor: theme.colors.primary.base,
+    },
+    secondaryButton: {
+      backgroundColor: theme.colors.surface.secondary,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    outlineButton: {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: theme.colors.primary.base,
+    },
+    dangerButton: {
+      backgroundColor: theme.colors.error.base,
+    },
+    disabledButton: {
+      opacity: 0.5,
+    },
+    smallButton: {
+      paddingVertical: theme.spacing.xs,
+      paddingHorizontal: theme.spacing.md,
+      minHeight: 32,
+    },
+    mediumButton: {
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.lg,
+      minHeight: 44,
+    },
+    largeButton: {
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.xl,
+      minHeight: 52,
+    },
+    text: {
+      fontWeight: theme.typography.fontWeights.semibold,
+    },
+    primaryText: {
+      color: theme.colors.text.inverse,
+    },
+    secondaryText: {
+      color: theme.colors.text.primary,
+    },
+    outlineText: {
+      color: theme.colors.primary.base,
+    },
+    dangerText: {
+      color: theme.colors.text.inverse,
+    },
+    disabledText: {
+      color: theme.colors.text.secondary,
+    },
+    smallText: {
+      fontSize: theme.typography.fontSizes.sm,
+    },
+    mediumText: {
+      fontSize: theme.typography.fontSizes.base,
+    },
+    largeText: {
+      fontSize: theme.typography.fontSizes.lg,
+    },
+  });
+

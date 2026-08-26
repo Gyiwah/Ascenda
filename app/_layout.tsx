@@ -5,6 +5,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { ThemeProvider, useAppTheme, useThemeMode } from '@/theme';
+import { View } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -16,6 +18,33 @@ try {
 } catch (e) {
   // Font file not found, will use system font fallback
   console.log('Dustrone font not found, using system font');
+}
+
+function LayoutContent() {
+  const theme = useAppTheme();
+  const { mode } = useThemeMode();
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
+      <ToastProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.colors.background.primary },
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(superadmin)" />
+          <Stack.Screen name="(admin)" />
+          <Stack.Screen name="(teacher)" />
+          <Stack.Screen name="(headmaster)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+      </ToastProvider>
+    </View>
+  );
 }
 
 export default function RootLayout() {
@@ -38,17 +67,9 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ToastProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(superadmin)" />
-        <Stack.Screen name="(admin)" />
-        <Stack.Screen name="(teacher)" />
-        <Stack.Screen name="(headmaster)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ToastProvider>
+    <ThemeProvider>
+      <LayoutContent />
+    </ThemeProvider>
   );
 }
+

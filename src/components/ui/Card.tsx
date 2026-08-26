@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { colors, spacing } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface CardProps {
   children: React.ReactNode;
@@ -8,19 +8,26 @@ interface CardProps {
 }
 
 export function Card({ children, style }: CardProps) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  const theme = useAppTheme();
+  const dynamicStyles = useMemo(() => ({
+    backgroundColor: theme?.colors?.surface?.primary ?? '#ffffff',
+    borderColor: theme?.colors?.border ?? '#e0dfdc',
+    shadowColor: theme?.colors?.background?.dark ?? '#000000',
+  }), [theme]);
+
+  return <View style={[styles.card, dynamicStyles, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.background.light,
     borderRadius: 12,
-    padding: spacing.md,
-    shadowColor: colors.background.dark ?? '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    padding: 16,
+    borderWidth: 1,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
 });
+
 

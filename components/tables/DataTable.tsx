@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface Column<T> {
 	key: keyof T | string;
@@ -15,6 +15,9 @@ interface Props<T> {
 }
 
 export function DataTable<T extends Record<string, any>>({ columns, rows, emptyText = 'No data' }: Props<T>) {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
+
 	if (!rows || rows.length === 0) {
 		return (
 			<View style={styles.empty}> 
@@ -43,42 +46,51 @@ export function DataTable<T extends Record<string, any>>({ columns, rows, emptyT
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		borderWidth: 1,
-		borderColor: colors.neutral[200],
-		borderRadius: 8,
-		overflow: 'hidden',
-	},
-	headerRow: {
-		flexDirection: 'row',
-		backgroundColor: colors.neutral[100],
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
-	},
-	headerCell: {
-		flex: 1,
-		fontWeight: typography.fontWeights.semibold,
-		color: colors.text.primary,
-	},
-	row: {
-		flexDirection: 'row',
-		borderTopWidth: 1,
-		borderTopColor: colors.neutral[200],
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
-	},
-	cell: {
-		flex: 1,
-	},
-	cellText: {
-		color: colors.text.primary,
-	},
-	empty: {
-		padding: spacing.lg,
-		alignItems: 'center',
-	},
-	emptyText: {
-		color: colors.text.secondary,
-	},
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		container: {
+			borderWidth: 1,
+			borderColor: theme.colors.border,
+			borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+			overflow: 'hidden',
+			backgroundColor: theme.colors.surface.primary,
+		},
+		headerRow: {
+			flexDirection: 'row',
+			backgroundColor: theme.colors.surface.secondary,
+			paddingHorizontal: theme.spacing.md,
+			paddingVertical: theme.spacing.sm,
+		},
+		headerCell: {
+			flex: 1,
+			fontWeight: theme.typography.fontWeights.semibold,
+			color: theme.colors.text.primary,
+			fontSize: theme.typography.fontSizes.sm,
+		},
+		row: {
+			flexDirection: 'row',
+			borderTopWidth: 1,
+			borderTopColor: theme.colors.divider,
+			paddingHorizontal: theme.spacing.md,
+			paddingVertical: theme.spacing.sm,
+		},
+		cell: {
+			flex: 1,
+			justifyContent: 'center',
+		},
+		cellText: {
+			color: theme.colors.text.primary,
+			fontSize: theme.typography.fontSizes.sm,
+		},
+		empty: {
+			padding: theme.spacing.lg,
+			alignItems: 'center',
+			backgroundColor: theme.colors.surface.primary,
+			borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+		},
+		emptyText: {
+			color: theme.colors.text.secondary,
+			fontSize: theme.typography.fontSizes.sm,
+		},
+	});
+

@@ -6,8 +6,10 @@ import MyClassesScreen from '../screens/teacher/MyClassesScreen';
 import ScoreEntrySelectionScreen from '../screens/teacher/ScoreEntrySelectionScreen';
 import StudentScoreEntryScreen from '../screens/teacher/StudentScoreEntryScreen';
 import RemarkEntryScreen from '../screens/teacher/RemarkEntryScreen';
+import AttendanceScreen from '../screens/teacher/AttendanceScreen';
 import SettingsScreen from '../screens/common/SettingsScreen';
 import { useAppTheme } from '@/theme/@ThemeProvider';
+
 import { Home, BookOpen, ClipboardList, UserCircle } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 
@@ -54,9 +56,10 @@ function TeacherTabs() {
       <Tab.Screen 
         name="MyClasses" 
         component={MyClassesScreen}
-        options={{ title: 'My Classes' }}
+        options={{ title: 'My Classrooms' }}
       />
       <Tab.Screen 
+
         name="ScoreEntry" 
         component={ScoreEntrySelectionScreen}
         options={{ title: 'Enter Scores' }}
@@ -66,8 +69,16 @@ function TeacherTabs() {
 }
 
 export default function TeacherNavigator() {
+  const theme = useAppTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: theme.colors.surface.primary },
+        headerTintColor: theme.colors.text.primary,
+        headerTitleStyle: { color: theme.colors.text.primary },
+      }}
+    >
       <Stack.Screen name="TeacherTabs" component={TeacherTabs} options={{ headerShown: false }} />
       <Stack.Screen
         name="StudentScoreEntry"
@@ -80,11 +91,18 @@ export default function TeacherNavigator() {
         options={{ title: 'Enter Remarks', headerBackTitle: 'Back' }}
       />
       <Stack.Screen
+        name="Attendance"
+        component={AttendanceScreen}
+        options={{ title: 'Class Attendance', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
         name="Settings"
         component={SettingsScreen}
         options={{ title: 'Settings & Preferences', headerBackTitle: 'Back' }}
       />
     </Stack.Navigator>
+
   );
 }
+
 

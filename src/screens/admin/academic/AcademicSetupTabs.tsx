@@ -18,7 +18,7 @@ export default function AcademicSetupTabs() {
   const [activeTab, setActiveTab] = useState<TabType>('classes');
 
   const tabs = [
-    { id: 'classes' as TabType, label: 'Classes', icon: BookOpen },
+    { id: 'classes' as TabType, label: 'Classrooms', icon: BookOpen },
     { id: 'subjects' as TabType, label: 'Subjects', icon: Hash },
     { id: 'assignments' as TabType, label: 'Assignments', icon: UserCheck },
     { id: 'settings' as TabType, label: 'Settings', icon: Settings },

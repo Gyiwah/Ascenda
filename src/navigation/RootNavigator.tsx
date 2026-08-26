@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View } from 'react-native';
 import { NavigationContainer, NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -13,14 +13,35 @@ import SuperAdminNavigator from './SuperAdminNavigator';
 import StudentNavigator from './StudentNavigator';
 import { navigationRef } from './navigationService';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { useAppTheme, useThemeMode } from '@/theme';
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
   const { user, loading } = useAuth();
+  const theme = useAppTheme();
+  const { mode } = useThemeMode();
   const previousUserRef = useRef<User | StudentUser | null>(null);
   const navRef = useRef<any>(null);
   const isNavigationReadyRef = useRef<boolean>(false);
+
+  const navTheme = useMemo(() => ({
+    dark: mode === 'dark',
+    colors: {
+      primary: theme.colors.primary.base,
+      background: theme.colors.background.primary,
+      card: theme.colors.surface.primary,
+      text: theme.colors.text.primary,
+      border: theme.colors.border,
+      notification: theme.colors.primary.base,
+    },
+    fonts: {
+      regular: { fontFamily: 'System', fontWeight: '400' as const },
+      medium: { fontFamily: 'System', fontWeight: '500' as const },
+      bold: { fontFamily: 'System', fontWeight: '700' as const },
+      heavy: { fontFamily: 'System', fontWeight: '900' as const },
+    },
+  }), [theme, mode]);
 
   const getRouteNameForUser = (userRole: string | undefined) => {
     switch (userRole) {
@@ -87,9 +108,10 @@ export default function RootNavigator() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
       <OfflineBanner />
       <NavigationContainer
+        theme={navTheme}
         ref={(ref) => {
           navRef.current = ref;
           navigationRef.current = ref as unknown as NavigationContainerRefWithCurrent<any>;
@@ -111,4 +133,5 @@ export default function RootNavigator() {
     </View>
   );
 }
+
 

@@ -21,10 +21,13 @@ import { useToast } from '@/components/ToastContext';
 import { useAppTheme } from '@/theme/@ThemeProvider';
 import { useKeyboardAvoidance } from '@/hooks/useKeyboardAvoidance';
 import { Class } from '@/types/database';
+import { validators } from '@/utils/validators';
+
 
 /**
- * AddClassScreen - Add or edit a class
+ * AddClassScreen - Add or edit a classroom
  */
+
 export default function AddClassScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
@@ -95,23 +98,17 @@ export default function AddClassScreen() {
       return;
     }
 
-    if (!name.trim()) {
-      showToast('Please enter class name', 'warning');
-      return;
-    }
-    if (!level.trim()) {
-      showToast('Please select class level', 'warning');
+    const valRes = validators.classroom({
+      name,
+      level,
+      academicYear,
+    });
+    if (!valRes.isValid) {
+      showToast(valRes.error || 'Invalid form input', 'warning');
       return;
     }
     const levelNum = parseInt(level.trim(), 10);
-    if (isNaN(levelNum) || levelNum < 1 || levelNum > 3) {
-      showToast('Please select a valid level', 'warning');
-      return;
-    }
-    if (!academicYear.trim()) {
-      showToast('Please enter academic year', 'warning');
-      return;
-    }
+
 
     setSubmitting(true);
     try {
@@ -126,11 +123,11 @@ export default function AddClassScreen() {
       if (isEditing) {
         const { error } = await classService.update(classId, payload);
         if (error) throw error;
-        showToast('Class updated', 'success');
+        showToast('Classroom updated', 'success');
       } else {
         const { error } = await classService.create(payload);
         if (error) throw error;
-        showToast('Class created', 'success');
+        showToast('Classroom created', 'success');
       }
 
       navigation.goBack();
@@ -152,7 +149,7 @@ export default function AddClassScreen() {
     >
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: keyboardAvoidance.contentPaddingBottom }]}> 
         <View style={styles.header}>
-          <Text style={styles.title}>{isEditing ? 'Edit Class' : 'New Class'}</Text>
+          <Text style={styles.title}>{isEditing ? 'Edit Classroom' : 'New Classroom'}</Text>
         </View>
 
         <Card style={styles.card}>
@@ -161,7 +158,7 @@ export default function AddClassScreen() {
           </View>
 
           <Input
-            label="Class Name *"
+            label="Classroom Name *"
             value={name}
             onChangeText={setName}
             placeholder="e.g., Form 1A, Grade 5B"
@@ -184,7 +181,7 @@ export default function AddClassScreen() {
           />
 
           <Button
-            title={isEditing ? 'Update Class' : 'Create Class'}
+            title={isEditing ? 'Update Classroom' : 'Create Classroom'}
             onPress={handleSave}
             loading={submitting}
             style={styles.saveButton}
@@ -193,6 +190,7 @@ export default function AddClassScreen() {
       </ScrollView>
     </KeyboardAvoidingView>
   );
+
 }
 
 const makeStyles = (theme: ReturnType<typeof useAppTheme> | any) => {

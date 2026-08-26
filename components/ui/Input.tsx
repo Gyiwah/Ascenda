@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   TextInput,
@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextInputProps,
 } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -22,6 +22,9 @@ export function Input({
   style,
   ...props
 }: InputProps) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => makeStyles(theme), [theme]);
+
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -31,7 +34,7 @@ export function Input({
           error && styles.inputError,
           style,
         ]}
-        placeholderTextColor={colors.text.secondary}
+        placeholderTextColor={theme.colors.text.muted}
         {...props}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
@@ -39,33 +42,35 @@ export function Input({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    fontSize: typography.fontSizes.sm,
-    fontWeight: typography.fontWeights.medium,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.neutral[300],
-    borderRadius: 8,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    fontSize: typography.fontSizes.base,
-    color: colors.text.primary,
-    backgroundColor: colors.background.light,
-    minHeight: 44,
-  },
-  inputError: {
-    borderColor: colors.error[500],
-  },
-  errorText: {
-    fontSize: typography.fontSizes.xs,
-    color: colors.error[500],
-    marginTop: spacing.xs,
-  },
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.spacing.md,
+    },
+    label: {
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.medium,
+      color: theme.colors.text.label || theme.colors.text.primary,
+      marginBottom: theme.spacing.xs,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: theme.roundness ? theme.roundness / 1.5 : 8,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
+      fontSize: theme.typography.fontSizes.base,
+      color: theme.colors.text.primary,
+      backgroundColor: theme.colors.surface.primary,
+      minHeight: 44,
+    },
+    inputError: {
+      borderColor: theme.colors.error.base,
+    },
+    errorText: {
+      fontSize: theme.typography.fontSizes.xs,
+      color: theme.colors.error.base,
+      marginTop: theme.spacing.xs,
+    },
+  });
+

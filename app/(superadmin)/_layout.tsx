@@ -1,17 +1,19 @@
 import { Tabs } from 'expo-router';
-import { colors } from '@/theme';
+import { useAppTheme } from '@/theme';
 import { School, Users, FileText, Home, User } from 'lucide-react-native';
 
 export default function SuperAdminLayout() {
+  const theme = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary[600],
-        tabBarInactiveTintColor: colors.text.secondary,
+        tabBarActiveTintColor: theme.colors.primary.base,
+        tabBarInactiveTintColor: theme.colors.text.secondary,
         tabBarStyle: {
-          backgroundColor: colors.background.light,
-          borderTopColor: colors.neutral[200],
+          backgroundColor: theme.colors.surface.primary,
+          borderTopColor: theme.colors.border,
         },
       }}
     >
@@ -59,3 +61,4 @@ export default function SuperAdminLayout() {
     </Tabs>
   );
 }
+

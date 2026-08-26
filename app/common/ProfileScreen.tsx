@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme';
+import { useAppTheme } from '@/theme';
 
 export default function ProfileScreen() {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Profile</Text>
@@ -11,20 +14,22 @@ export default function ProfileScreen() {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: colors.background.light,
-		padding: spacing.xl,
-	},
-	title: {
-		fontSize: typography.fontSizes['2xl'],
-		fontWeight: typography.fontWeights.bold,
-		color: colors.text.primary,
-		marginBottom: spacing.sm,
-	},
-	subtitle: {
-		fontSize: typography.fontSizes.base,
-		color: colors.text.secondary,
-	},
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		container: {
+			flex: 1,
+			backgroundColor: theme.colors.background.primary,
+			padding: theme.spacing.xl,
+		},
+		title: {
+			fontSize: theme.typography.fontSizes['2xl'],
+			fontWeight: theme.typography.fontWeights.bold,
+			color: theme.colors.text.primary,
+			marginBottom: theme.spacing.sm,
+		},
+		subtitle: {
+			fontSize: theme.typography.fontSizes.base,
+			color: theme.colors.text.secondary,
+		},
+	});
+

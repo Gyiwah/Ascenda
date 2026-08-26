@@ -193,7 +193,7 @@ export default function TeacherDashboardScreen() {
           <Pressable onPress={navigateToMyClasses} style={styles.quickStatCard}>
             <BookOpen size={24} color={theme.colors.primary.base} />
             <Text style={styles.quickStatValue}>{stats.totalClasses}</Text>
-            <Text style={styles.quickStatLabel}>Classes</Text>
+            <Text style={styles.quickStatLabel}>Classrooms</Text>
           </Pressable>
 
           <Pressable onPress={navigateToMyClasses} style={styles.quickStatCard}>
@@ -247,26 +247,44 @@ export default function TeacherDashboardScreen() {
             onPress={navigateToMyClasses}
             style={styles.actionButton}
           >
+
+
             <View style={styles.actionContent}>
               <BookOpen size={20} color={theme.colors.primary.base} />
               <View style={styles.actionTextContainer}>
-                <Text style={styles.actionTitle}>View My Classes</Text>
-                <Text style={styles.actionSubtitle}>Manage classes and enter scores</Text>
+                <Text style={styles.actionTitle}>View My Classrooms</Text>
+                <Text style={styles.actionSubtitle}>Manage classrooms and enter scores</Text>
+              </View>
+            </View>
+            <Text style={styles.actionArrow}>→</Text>
+          </Pressable>
+
+          <Pressable 
+            onPress={() => navigation.navigate('Attendance')}
+            style={[styles.actionButton, { marginTop: theme.spacing.sm }]}
+          >
+            <View style={styles.actionContent}>
+              <CheckCircle size={20} color={theme.colors.accent.base} />
+              <View style={styles.actionTextContainer}>
+                <Text style={styles.actionTitle}>Classroom Attendance</Text>
+                <Text style={styles.actionSubtitle}>Mark and manage daily attendance register</Text>
               </View>
             </View>
             <Text style={styles.actionArrow}>→</Text>
           </Pressable>
         </Card>
 
+
         {/* Summary Info */}
         <Card style={styles.infoCard}>
           <View style={styles.infoRow}>
             <ClipboardList size={18} color={theme.colors.text.secondary} />
             <Text style={styles.infoText}>
-              You have {stats.totalAssignments} active assignment{stats.totalAssignments !== 1 ? 's' : ''} across {stats.totalClasses} class{stats.totalClasses !== 1 ? 'es' : ''}
+              You have {stats.totalAssignments} active assignment{stats.totalAssignments !== 1 ? 's' : ''} across {stats.totalClasses} classroom{stats.totalClasses !== 1 ? 's' : ''}
             </Text>
           </View>
         </Card>
+
       </View>
     </ScrollView>
   );

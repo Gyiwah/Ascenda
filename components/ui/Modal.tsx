@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Modal as RNModal, View, StyleSheet, ViewStyle } from 'react-native';
-import { colors, spacing, hexToRgba } from '@/theme';
+import { useAppTheme, hexToRgba } from '@/theme';
 
 interface ModalProps {
 	visible: boolean;
@@ -10,6 +10,9 @@ interface ModalProps {
 }
 
 export function Modal({ visible, onRequestClose, children, contentStyle }: ModalProps) {
+	const theme = useAppTheme();
+	const styles = useMemo(() => makeStyles(theme), [theme]);
+
 	return (
 		<RNModal visible={visible} transparent animationType="slide" onRequestClose={onRequestClose}>
 			<View style={styles.overlay}>
@@ -19,17 +22,21 @@ export function Modal({ visible, onRequestClose, children, contentStyle }: Modal
 	);
 }
 
-const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		backgroundColor: hexToRgba(colors.background.dark ?? '#000000', 0.5),
-		justifyContent: 'flex-end',
-	},
-	content: {
-		backgroundColor: colors.background.light,
-		borderTopLeftRadius: 20,
-		borderTopRightRadius: 20,
-		padding: spacing.xl,
-		maxHeight: '80%',
-	},
-});
+const makeStyles = (theme: ReturnType<typeof useAppTheme>) =>
+	StyleSheet.create({
+		overlay: {
+			flex: 1,
+			backgroundColor: hexToRgba(theme.colors.background.dark ?? '#000000', 0.6),
+			justifyContent: 'flex-end',
+		},
+		content: {
+			backgroundColor: theme.colors.surface.primary,
+			borderTopLeftRadius: 20,
+			borderTopRightRadius: 20,
+			padding: theme.spacing.xl,
+			maxHeight: '80%',
+			borderWidth: 1,
+			borderColor: theme.colors.border,
+		},
+	});
+

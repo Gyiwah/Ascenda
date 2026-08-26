@@ -49,7 +49,7 @@ export default function ClassesScreen() {
   };
 
   const onDelete = (c: Class) => {
-    Alert.alert('Delete Class', `Delete ${c.name}?`, [
+    Alert.alert('Delete Classroom', `Delete ${c.name}?`, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: async () => { await classService.delete(c.id); load(); } },
     ]);
@@ -58,8 +58,8 @@ export default function ClassesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Classes</Text>
-        <Button title="Add Class" onPress={() => { setEditing(null); setShowModal(true); }} />
+        <Text style={styles.title}>Classrooms</Text>
+        <Button title="Add Classroom" onPress={() => { setEditing(null); setShowModal(true); }} />
       </View>
 
       <View style={styles.toolbar}>
@@ -67,7 +67,7 @@ export default function ClassesScreen() {
           label="Search"
           value={query}
           onChangeText={setQuery}
-          placeholder="Search classes by name or year"
+          placeholder="Search classrooms by name or year"
         />
       </View>
 
@@ -75,7 +75,7 @@ export default function ClassesScreen() {
         data={classes.filter(c => c.name.toLowerCase().includes(query.toLowerCase()) || c.academic_year.toLowerCase().includes(query.toLowerCase()))}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<EmptyState title="No classes" message='Tap "Add Class" to create your first class.' />}
+        ListEmptyComponent={<EmptyState title="No classrooms" message='Tap "Add Classroom" to create your first classroom.' />}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
         renderItem={({ item }) => (
           <Card style={styles.row}>
@@ -96,12 +96,13 @@ export default function ClassesScreen() {
       />
 
       <Modal visible={showModal} onRequestClose={() => setShowModal(false)}>
-        <Text style={styles.modalTitle}>{editing ? 'Edit Class' : 'Add Class'}</Text>
+        <Text style={styles.modalTitle}>{editing ? 'Edit Classroom' : 'Add Classroom'}</Text>
         <ClassForm initial={editing || undefined} onSubmit={onSave} />
         <Button title="Close" variant="outline" onPress={() => setShowModal(false)} style={{ marginTop: spacing.md }} />
       </Modal>
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
